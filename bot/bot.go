@@ -11,7 +11,11 @@ import (
 )
 
 type Bot interface {
+	// Start brings the bot online.
 	Start() error
+	// Wait blocks until it receives a shutdown signal.
+	Wait()
+	// Stop takes the bot offline.
 	Stop()
 }
 
@@ -51,4 +55,18 @@ func (b *bot) Start() error {
 
 	signal.Notify(b.sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	return nil
+}
+
+func (b *bot) Wait() {
+	b.init()
+
+	<-b.sc
+}
+
+func (b *bot) Stop() {
+	b.init()
+
+	log.Info().Msg("Shutting down politely! This might take a moment.")
+	b.dg.Close()
+	log.Info().Msg("Goodbye! 💖")
 }

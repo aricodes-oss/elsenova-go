@@ -23,23 +23,40 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"elsenova/bot"
+
 	"github.com/rs/zerolog/log"
 )
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
 	Use:   "start",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Runs the discord bot.",
+	Long:  `Runs the discord bot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info().Msg("Starting up!")
+		token := viper.GetString("token")
+		if token == "" {
+			// cobra provides the RunE field which lets us return an `err` from Run
+			// but we're using zerlog everywhere else for status messages
+			log.Fatal().Msg("No token specified in elsenova.yml!")
+		}
+
+		b, err := bot.New(token)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Error connecting to discord!")
+		}
+
+		err = b.Start()
+		if err != nil {
+			log.Fatal().Err(err).Msg("Error starting elsenova!")
+		}
+		log.Info().Msg("Ret-2-go!")
+
+		b.Wait()
+		b.Stop()
 	},
 }
 

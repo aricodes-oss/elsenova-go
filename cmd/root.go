@@ -80,7 +80,7 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".elsenova" (without extension).
+		// Search config in home directory with name "elsenova" (without extension).
 		viper.AddConfigPath(home)
 		// Search in the current directory.
 		viper.AddConfigPath(".")
