@@ -5,7 +5,6 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
@@ -34,11 +33,6 @@ type bot struct {
 	// The raw session pointer
 	dg *discordgo.Session
 
-	// Command cooldowns
-	triggerTimes map[string]time.Time
-
-	registeredCommands []*discordgo.ApplicationCommand
-
 	// Signal handler for receiving shutdown requests
 	sc chan os.Signal
 
@@ -48,49 +42,34 @@ type bot struct {
 
 func (b *bot) init() {
 	b.initOnce.Do(func() {
+		b.dg.Identify.Intents = discordgo.IntentsGuildMessages
 		b.dg.Open()
 		b.sc = make(chan os.Signal, 1)
 
+		// Incoming message event handler
 		b.dg.AddHandler(b.messageCreate)
 
-		commands := []*discordgo.ApplicationCommand{
-			{
-				Name:        "vore",
-				Description: "Increments the vore counter",
-			},
-		}
-
-		handlers := map[string]CommandHandler{
-			"vore": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: "God damn it, really?",
-					},
-				})
-			},
-		}
-
+		// Slash command base handler (route to map)
 		b.dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			if handler, ok := handlers[i.ApplicationCommandData().Name]; ok {
 				handler(s, i)
 			}
 		})
 
-		b.registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
+		registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
 		for idx, rawCmd := range commands {
 			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, viper.GetString("guild_id"), rawCmd)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to register application commands")
 			}
-			b.registeredCommands[idx] = cmd
+			registeredCommands[idx] = cmd
 		}
 	})
 }
 
 func (b *bot) destroy() {
 	b.destroyOnce.Do(func() {
-		for _, cmd := range b.registeredCommands {
+		for _, cmd := range registeredCommands {
 			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, viper.GetString("guild_id"), cmd.ID)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to deregister command!")
@@ -101,9 +80,6 @@ func (b *bot) destroy() {
 
 func (b *bot) Start() error {
 	b.init()
-
-	// TODO: add handlers
-	b.dg.Identify.Intents = discordgo.IntentsGuildMessages
 
 	signal.Notify(b.sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	return nil
