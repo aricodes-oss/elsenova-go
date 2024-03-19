@@ -28,3 +28,6 @@ go.work
 
 # Configuration file
 elsenova.yml
+
+# Executable
+elsenova
