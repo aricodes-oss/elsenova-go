@@ -24,8 +24,6 @@ func init() {
 		panic(err)
 	}
 
-	fmt.Println(viper.GetString("db_url"))
-
 	switch parsed.Scheme {
 	case "sqlite":
 		dialect = sqlite.Open(parsed.Host)
