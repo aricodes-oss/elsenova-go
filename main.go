@@ -21,8 +21,17 @@ THE SOFTWARE.
 */
 package main
 
-import "elsenova/cmd"
+import (
+	"elsenova/cmd"
+	"elsenova/db"
+	"elsenova/models"
+	"elsenova/query"
+)
+
+//go:generate go run gen/main.go
 
 func main() {
+	query.SetDefault(db.Connection)
+	db.Connection.AutoMigrate(models.AllModels...)
 	cmd.Execute()
 }

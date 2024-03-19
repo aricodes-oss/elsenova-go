@@ -57,7 +57,7 @@ func init() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(InitConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -70,8 +70,8 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
+// InitConfig reads in config file and ENV variables if set.
+func InitConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -89,6 +89,7 @@ func initConfig() {
 	}
 
 	viper.SetDefault("debug_logging", true)
+	viper.SetDefault("db_url", "sqlite://./data.db")
 
 	viper.SetDefault("cooldowns.default", 10)
 	viper.SetDefault("cooldowns.vore", 600)

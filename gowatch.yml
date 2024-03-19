@@ -34,8 +34,8 @@ build_args:
 vendor_watch: false
 
 # Directory that do not need to listen for file changes
-# excluded_paths:
-#   - path
+excluded_paths:
+  - query
 
 # main package path, can also be a single file, multiple files separated by commas
 build_pkg: ''
@@ -44,8 +44,8 @@ build_pkg: ''
 build_tags: ''
 
 # Commands that can be executed before build the app
-# prev_build_cmds:
-#   - swag init
+prev_build_cmds:
+  - go generate
 
 # Whether to prohibit automatic operation
 disable_run: false
