@@ -9,6 +9,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 )
 
 type Bot interface {
@@ -78,7 +79,7 @@ func (b *bot) init() {
 
 		b.registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
 		for idx, rawCmd := range commands {
-			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, "", rawCmd)
+			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, viper.GetString("guild_id"), rawCmd)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to register application commands")
 			}
@@ -90,7 +91,7 @@ func (b *bot) init() {
 func (b *bot) destroy() {
 	b.destroyOnce.Do(func() {
 		for _, cmd := range b.registeredCommands {
-			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, "", cmd.ID)
+			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, viper.GetString("guild_id"), cmd.ID)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to deregister command!")
 			}
