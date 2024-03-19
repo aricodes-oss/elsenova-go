@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
@@ -36,6 +37,9 @@ type bot struct {
 	// Signal handler for receiving shutdown requests
 	sc chan os.Signal
 
+	// Command cooldowns
+	lastRunTime map[string]time.Time
+
 	initOnce    sync.Once
 	destroyOnce sync.Once
 }
@@ -44,17 +48,14 @@ func (b *bot) init() {
 	b.initOnce.Do(func() {
 		b.dg.Identify.Intents = discordgo.IntentsGuildMessages
 		b.dg.Open()
+
+		// Initialize fields
 		b.sc = make(chan os.Signal, 1)
+		b.lastRunTime = make(map[string]time.Time)
 
-		// Incoming message event handler
-		b.dg.AddHandler(b.messageCreate)
-
-		// Slash command base handler (route to map)
-		b.dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			if handler, ok := handlers[i.ApplicationCommandData().Name]; ok {
-				handler(s, i)
-			}
-		})
+		// Handlers
+		b.dg.AddHandler(b.messageCreate)      // Incoming message
+		b.dg.AddHandler(b.slashCommandRouter) // Slash command (route to map, see commands.go)
 
 		registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
 		for idx, rawCmd := range commands {

@@ -89,7 +89,8 @@ func InitConfig() {
 	}
 
 	viper.SetDefault("debug_logging", true)
-	viper.SetDefault("db_url", "sqlite://./data.db")
+	viper.SetDefault("db_url", "sqlite://data.db")
+	viper.SetDefault("base_vore_count", 0)
 
 	viper.SetDefault("cooldowns.default", 10)
 	viper.SetDefault("cooldowns.vore", 600)

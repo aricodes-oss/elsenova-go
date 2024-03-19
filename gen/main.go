@@ -1,5 +1,3 @@
-//go:build exclude
-
 package main
 
 import (
@@ -7,6 +5,9 @@ import (
 	"elsenova/models"
 	"gorm.io/gen"
 )
+
+type Querier interface {
+}
 
 func main() {
 	g := gen.NewGenerator(gen.Config{
@@ -19,6 +20,8 @@ func main() {
 
 	// Generate basic type-safe DAO API for struct `model.User` following conventions
 	g.ApplyBasic(models.Vore{})
+
+	g.ApplyInterface(func(Querier) {}, models.Vore{})
 
 	// Generate the code
 	g.Execute()

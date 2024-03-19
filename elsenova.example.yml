@@ -1,0 +1,19 @@
+# REQUIRED:
+# Your discord bot token
+token: your_bot_token
+# The guild to register commands in
+guild_id: 1234567890
+
+# OPTIONAL:
+db_url: sqlite://data.db # default
+base_vore_count: 0 # default
+
+# map[string]int - map[commandName]secondsBetween
+cooldowns:
+  default: 10 # default
+  vore: 600 # default
+
+twitch:
+  client:
+    id: twitch_client_id
+    secret: twitch_client_secret

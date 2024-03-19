@@ -31,3 +31,6 @@ elsenova.yml
 
 # Executable
 elsenova
+
+# Database
+*.db
