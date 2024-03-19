@@ -88,6 +88,11 @@ func initConfig() {
 		viper.SetConfigName("elsenova")
 	}
 
+	viper.SetDefault("debug_logging", true)
+
+	viper.SetDefault("cooldowns.default", 10)
+	viper.SetDefault("cooldowns.vore", 600)
+
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
