@@ -6,14 +6,12 @@ WORKDIR /elsenova
 COPY . .
 
 # Build statically linked binary
-RUN CGO_ENABLED=0 go build
+RUN go build
 
 ###
-FROM scratch
+FROM golang:latest
 
-# SSL authority (needed to connect to discord)
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-# Application binary
-COPY --from=build /elsenova/elsenova /
+WORKDIR /
 
+COPY --from=build /elsenova/elsenova .
 ENTRYPOINT ["/elsenova"]
