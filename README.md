@@ -25,7 +25,7 @@ go build
 
 Place a file named `elsenova.yml` in the same directory as the executable. See [elsenova.example.yml](./elsenova.example.yml) for all of the configuration options supported.
 
-At a minimum, you are **required** to give a `token` and `guild_id` for the bot to connect.
+At a minimum, you are **required** to give a `token` and `guildID` for the bot to connect.
 
 ## Contributing
 

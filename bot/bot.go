@@ -60,7 +60,7 @@ func (b *bot) init() {
 
 		// Handlers
 		b.dg.AddHandler(b.messageCreate)      // Incoming message
-		b.dg.AddHandler(b.slashCommandRouter) // Slash command (route to map, see commands.go)
+		b.dg.AddHandler(b.slashCommandRouter) // Slash command (route to map, see commands.go and ./commands)
 
 		cmdList, _ := commands.All()
 
@@ -77,7 +77,7 @@ func (b *bot) init() {
 
 func (b *bot) destroy() {
 	b.destroyOnce.Do(func() {
-		conf := config.Load()
+		conf = config.Load()
 
 		for _, cmd := range registeredCommands {
 			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, conf.GuildID, cmd.ID)
