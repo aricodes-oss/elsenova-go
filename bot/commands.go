@@ -42,6 +42,14 @@ var (
 			Name:        "vore",
 			Description: "Increments the vore counter",
 		},
+		{
+			Name:        "source",
+			Description: "Sends a link to this bot's GitHub repo",
+		},
+		{
+			Name:        "wiki",
+			Description: "Sends a link to the Axiom Verge speedrunning wiki",
+		},
 	}
 
 	// The implementation of each command
@@ -61,6 +69,22 @@ var (
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Content: fmt.Sprintf("We've talked about vore %d times now. Stop it.", base_count+record_count),
+				},
+			})
+		},
+		"source": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "https://github.com/aricodes-oss/elsenova-go",
+				},
+			})
+		},
+		"wiki": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "https://sudra-routes.com/",
 				},
 			})
 		},
