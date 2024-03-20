@@ -25,11 +25,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -88,9 +87,9 @@ func InitConfig() {
 		viper.SetConfigName("elsenova")
 	}
 
-	viper.SetDefault("debug_logging", true)
-	viper.SetDefault("db_url", "sqlite://data.db")
-	viper.SetDefault("base_vore_count", 0)
+	viper.SetDefault("debugLogging", true)
+	viper.SetDefault("databaseUrl", "sqlite://data.db")
+	viper.SetDefault("baseVoreCount", 0)
 
 	viper.SetDefault("cooldowns.default", 10)
 	viper.SetDefault("cooldowns.vore", 600)

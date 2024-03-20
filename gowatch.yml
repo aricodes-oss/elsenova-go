@@ -44,8 +44,8 @@ build_pkg: ''
 build_tags: ''
 
 # Commands that can be executed before build the app
-prev_build_cmds:
-  - go generate
+# prev_build_cmds:
+#   - go generate
 
 # Whether to prohibit automatic operation
 disable_run: false

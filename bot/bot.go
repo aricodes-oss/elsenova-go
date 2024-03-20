@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"elsenova/config"
 	"os"
 	"os/signal"
 	"sync"
@@ -9,8 +10,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
+
+var conf *config.Config
 
 type Bot interface {
 	// Start brings the bot online.
@@ -46,6 +48,8 @@ type bot struct {
 
 func (b *bot) init() {
 	b.initOnce.Do(func() {
+		conf := config.Load()
+
 		b.dg.Identify.Intents = discordgo.IntentsGuildMessages
 		b.dg.Open()
 
@@ -59,7 +63,7 @@ func (b *bot) init() {
 
 		registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
 		for idx, rawCmd := range commands {
-			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, viper.GetString("guild_id"), rawCmd)
+			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, conf.GuildID, rawCmd)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to register application commands")
 			}
@@ -70,8 +74,10 @@ func (b *bot) init() {
 
 func (b *bot) destroy() {
 	b.destroyOnce.Do(func() {
+		conf := config.Load()
+
 		for _, cmd := range registeredCommands {
-			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, viper.GetString("guild_id"), cmd.ID)
+			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, conf.GuildID, cmd.ID)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to deregister command!")
 			}

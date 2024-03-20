@@ -22,57 +22,36 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
-
-	"elsenova/bot"
-	"elsenova/config"
-
-	"github.com/rs/zerolog/log"
 )
 
-// startCmd represents the start command
-var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Runs the discord bot.",
-	Long:  `Runs the discord bot.`,
+// serveCmd represents the serve command
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Info().Msg("Starting up!")
-
-		conf := config.Load()
-		token := conf.Token
-
-		if token == "" {
-			// cobra provides the RunE field which lets us return an `err` from Run
-			// but we're using zerlog everywhere else for status messages
-			log.Fatal().Msg("No token specified in elsenova.yml!")
-		}
-
-		b, err := bot.New(token)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Error connecting to discord!")
-		}
-
-		err = b.Start()
-		if err != nil {
-			log.Fatal().Err(err).Msg("Error starting elsenova!")
-		}
-		log.Info().Msg("Ret-2-go!")
-
-		b.Wait()
-		b.Stop()
+		fmt.Println("serve called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(serveCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// startCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// serveCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

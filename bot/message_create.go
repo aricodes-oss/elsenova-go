@@ -1,11 +1,11 @@
 package bot
 
 import (
+	"elsenova/config"
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
-	"github.com/spf13/viper"
 )
 
 func (b *bot) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -14,7 +14,9 @@ func (b *bot) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if viper.GetBool("debug_logging") {
+	conf := config.Load()
+
+	if conf.DebugLogging {
 		msg := fmt.Sprintf("RCV [%v] - %v", m.ChannelID, m.Content)
 		log.Info().Msg(msg)
 	}

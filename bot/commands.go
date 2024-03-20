@@ -1,13 +1,13 @@
 package bot
 
 import (
+	"elsenova/config"
 	"elsenova/models"
 	"elsenova/query"
 	"fmt"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/spf13/viper"
 )
 
 type CommandHandler = func(s *discordgo.Session, i *discordgo.InteractionCreate)
@@ -56,19 +56,20 @@ var (
 	handlers = map[string]CommandHandler{
 		"vore": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			v := query.Vore
+			conf := config.Load()
 
 			v.Create(&models.Vore{
 				UserID: i.Member.User.ID,
 			})
 
 			// The number prior to migrating to the leadervoreds system
-			base_count := viper.GetInt64("base_vore_count")
-			record_count, _ := v.Count()
+			baseCount := int64(conf.BaseVoreCount)
+			recordCount, _ := v.Count()
 
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: fmt.Sprintf("We've talked about vore %d times now. Stop it.", base_count+record_count),
+					Content: fmt.Sprintf("We've talked about vore %d times now. Stop it.", baseCount+recordCount),
 				},
 			})
 		},

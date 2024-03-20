@@ -2,14 +2,13 @@ package db
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"net/url"
 
-	// Configures viper
 	"elsenova/cmd"
+	"elsenova/config"
 )
 
 var Connection *gorm.DB
@@ -19,7 +18,9 @@ func init() {
 
 	cmd.InitConfig()
 
-	parsed, err := url.Parse(viper.GetString("db_url"))
+	conf := config.Load()
+
+	parsed, err := url.Parse(conf.DatabaseURL)
 	if err != nil {
 		panic(err)
 	}
