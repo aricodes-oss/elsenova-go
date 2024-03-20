@@ -17,6 +17,10 @@ type Config struct {
 		Default int
 		Vore    int
 	}
+
+	Web struct {
+		Port int
+	}
 }
 
 var current *Config

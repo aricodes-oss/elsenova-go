@@ -7,5 +7,5 @@ import (
 type Vore struct {
 	gorm.Model
 
-	UserID string
+	UserID string `json:"userID"`
 }

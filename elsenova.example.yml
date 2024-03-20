@@ -8,6 +8,9 @@ guildID: 1234567890
 databaseURL: sqlite://data.db # default
 baseVoreCount: 0 # default
 
+web:
+  port: 3000 # default
+
 # map[string]int - map[commandName]secondsBetween
 cooldowns:
   default: 10 # default

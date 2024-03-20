@@ -22,36 +22,45 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"elsenova/config"
-	"elsenova/web"
-	"fmt"
+	"sync"
 
 	"github.com/spf13/cobra"
 )
 
-// serveCmd represents the serve command
-var serveCmd = &cobra.Command{
-	Use:   "serve",
-	Short: "Starts the web API tier of the bot.",
-	Long:  `Starts the web API tier of the bot.`,
+// allCmd represents the all command
+var allCmd = &cobra.Command{
+	Use:   "all",
+	Short: "Starts all available subsystems.",
+	Long:  `Starts all available subsystems. Useful for local development.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		router := web.NewRouter()
-		conf := config.Load()
+		wg := sync.WaitGroup{}
 
-		router.Run(fmt.Sprintf(":%d", conf.Web.Port))
+		subCmds := []*cobra.Command{
+			serveCmd,
+			startCmd,
+		}
+
+		wg.Add(len(subCmds))
+		for _, subCmd := range subCmds {
+			go func() {
+				subCmd.Run(cmd, args)
+				wg.Done()
+			}()
+		}
+		wg.Wait()
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(serveCmd)
+	rootCmd.AddCommand(allCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// serveCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// allCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// serveCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// allCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
