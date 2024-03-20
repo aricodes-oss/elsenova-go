@@ -2,6 +2,8 @@
 
 [![publish](https://github.com/aricodes-oss/elsenova-go/actions/workflows/publish.yml/badge.svg)](https://github.com/aricodes-oss/elsenova-go/actions/workflows/publish.yml)
 [![lint](https://github.com/aricodes-oss/elsenova-go/actions/workflows/lint.yml/badge.svg)](https://github.com/aricodes-oss/elsenova-go/actions/workflows/lint.yml)
+<img alt="tags-badge" id="tags" src="https://ghcr-badge.egpl.dev/aricodes-oss/elsenova-go/tags?color=%2344cc11&amp;ignore=&amp;n=3&amp;label=image+tags&amp;trim=">
+<img alt="size-badge" id="size" src="https://ghcr-badge.egpl.dev/aricodes-oss/elsenova-go/size?color=%2344cc11&amp;tag=latest&amp;label=image+size&amp;trim=">
 
 Your friendly neighborhood Axiom Verge discord server bot!
 
