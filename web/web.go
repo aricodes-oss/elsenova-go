@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	vore = &controllers.VoreController{}
+	vore    = &controllers.VoreController{}
+	discord = &controllers.DiscordController{}
 )
 
 func NewRouter() *gin.Engine {
@@ -17,6 +18,7 @@ func NewRouter() *gin.Engine {
 
 	// Mount controllers
 	vore.Mount(api)
+	discord.Mount(api)
 
 	return router
 }
