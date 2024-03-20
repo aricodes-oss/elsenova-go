@@ -19,8 +19,14 @@ type Config struct {
 	}
 }
 
+var current *Config
+
 func Load() *Config {
-	ret := &Config{}
-	viper.Unmarshal(ret)
-	return ret
+	if current != nil {
+		return current
+	}
+
+	current = &Config{}
+	viper.Unmarshal(current)
+	return current
 }
