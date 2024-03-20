@@ -34,3 +34,6 @@ elsenova
 
 # Database
 *.db
+
+# ASDF version manager
+.tool-versions
