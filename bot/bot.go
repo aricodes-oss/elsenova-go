@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"elsenova/bot/commands"
 	"elsenova/config"
 	"os"
 	"os/signal"
@@ -61,8 +62,10 @@ func (b *bot) init() {
 		b.dg.AddHandler(b.messageCreate)      // Incoming message
 		b.dg.AddHandler(b.slashCommandRouter) // Slash command (route to map, see commands.go)
 
-		registeredCommands = make([]*discordgo.ApplicationCommand, len(commands))
-		for idx, rawCmd := range commands {
+		cmdList, _ := commands.All()
+
+		registeredCommands = make([]*discordgo.ApplicationCommand, len(cmdList))
+		for idx, rawCmd := range cmdList {
 			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, conf.GuildID, rawCmd)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to register application commands")
@@ -88,7 +91,7 @@ func (b *bot) destroy() {
 func (b *bot) Start() error {
 	b.init()
 
-	signal.Notify(b.sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	signal.Notify(b.sc, syscall.SIGINT, syscall.SIGTERM, syscall.SIGABRT, os.Interrupt)
 	return nil
 }
 

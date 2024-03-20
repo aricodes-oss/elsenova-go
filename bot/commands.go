@@ -1,10 +1,7 @@
 package bot
 
 import (
-	"elsenova/config"
-	"elsenova/models"
-	"elsenova/query"
-	"fmt"
+	"elsenova/bot/commands"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -14,6 +11,7 @@ type CommandHandler = func(s *discordgo.Session, i *discordgo.InteractionCreate)
 
 func (b *bot) slashCommandRouter(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	name := i.ApplicationCommandData().Name
+	_, handlers := commands.All()
 
 	if handler, ok := handlers[name]; ok {
 		if b.commandOnCooldown(name) {
@@ -35,59 +33,4 @@ func (b *bot) slashCommandRouter(s *discordgo.Session, i *discordgo.InteractionC
 var (
 	// Stores command registration info for deletion on shutdown
 	registeredCommands []*discordgo.ApplicationCommand
-
-	// The command+argument specifications
-	commands = []*discordgo.ApplicationCommand{
-		{
-			Name:        "vore",
-			Description: "Increments the vore counter",
-		},
-		{
-			Name:        "source",
-			Description: "Sends a link to this bot's GitHub repo",
-		},
-		{
-			Name:        "wiki",
-			Description: "Sends a link to the Axiom Verge speedrunning wiki",
-		},
-	}
-
-	// The implementation of each command
-	handlers = map[string]CommandHandler{
-		"vore": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			v := query.Vore
-			conf := config.Load()
-
-			v.Create(&models.Vore{
-				UserID: i.Member.User.ID,
-			})
-
-			// The number prior to migrating to the leadervoreds system
-			baseCount := int64(conf.BaseVoreCount)
-			recordCount, _ := v.Count()
-
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: fmt.Sprintf("We've talked about vore %d times now. Stop it.", baseCount+recordCount),
-				},
-			})
-		},
-		"source": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "https://github.com/aricodes-oss/elsenova-go",
-				},
-			})
-		},
-		"wiki": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "https://sudra-routes.com/",
-				},
-			})
-		},
-	}
 )
