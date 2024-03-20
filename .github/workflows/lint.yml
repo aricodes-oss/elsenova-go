@@ -1,0 +1,12 @@
+name: lint
+on: push
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '^1.22.1' # The Go version to download (if necessary) and use.
+      - run: gofmt -d -e -l ./
