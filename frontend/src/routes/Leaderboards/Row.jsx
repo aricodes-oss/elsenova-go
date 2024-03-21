@@ -4,8 +4,6 @@ import { useUserInfoQuery } from '@/hooks/query-hooks/discord';
 const Row = ({ userID, count, ...props }) => {
   const { data: user, isLoading } = useUserInfoQuery(userID);
 
-  console.log(user);
-
   return (
     <tr {...props}>
       <td>{isLoading ? 'Loading...' : user.username}</td>
