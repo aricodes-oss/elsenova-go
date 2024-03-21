@@ -22,10 +22,17 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"context"
 	"elsenova/config"
 	"elsenova/web"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
@@ -37,8 +44,31 @@ var serveCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		router := web.NewRouter()
 		conf := config.Load()
+		addr := fmt.Sprintf(":%d", conf.Web.Port)
+		srv := &http.Server{Addr: addr, Handler: router}
 
-		router.Run(fmt.Sprintf(":%d", conf.Web.Port))
+		go func() {
+			// service connections
+			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				log.Fatal().Err(err).Msg("Listen error")
+			}
+		}()
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Fatal().Err(err).Msg("Server shutdown")
+		}
+
+		select {
+		case <-ctx.Done():
+			log.Warn().Msg("Sever shutdown timeout hit")
+		}
+		log.Info().Msg("Server exiting!")
 	},
 }
 

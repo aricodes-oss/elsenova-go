@@ -16,8 +16,8 @@ var slug embed.FS
 // In prod we need to redirect to the embed folder route
 func mountFrontend(router *gin.Engine) {
 	staticFiles := static.Serve("/", static.EmbedFolder(slug, "dist"))
-	router.NoRoute(noRoute)
 	router.Use(staticFiles)
+	router.NoRoute(noRoute)
 }
 
 func noRoute(c *gin.Context) {
