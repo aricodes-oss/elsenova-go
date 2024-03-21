@@ -1,9 +1,9 @@
-import Nav from '../components/Nav';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
-import ProfilePicture from '../assets/profile.png';
+import Nav from '@/components/Nav';
+import ProfilePicture from '@/assets/profile.png';
 
 function Home() {
   return (

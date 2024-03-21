@@ -42,8 +42,8 @@ func (v *VoreController) GetOne(c ctx) {
 
 func (v *VoreController) Stats(c ctx) {
 	var results []struct {
-		UserID string
-		Total  int
+		UserID string `json:"userID"`
+		Total  int    `json:"total"`
 	}
 
 	Vore := query.Vore
