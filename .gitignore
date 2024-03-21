@@ -37,3 +37,6 @@ elsenova
 
 # ASDF version manager
 .tool-versions
+
+# Compiled frontend for production
+web/dist
