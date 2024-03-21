@@ -1,11 +1,11 @@
-import Nav from './components/Nav';
+import Nav from '../components/Nav';
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 
-import ProfilePicture from './assets/profile.png';
+import ProfilePicture from '../assets/profile.png';
 
-function App() {
+function Home() {
   return (
     <>
       <Nav />
@@ -30,4 +30,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
