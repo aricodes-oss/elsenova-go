@@ -87,7 +87,8 @@ func InitConfig() {
 		viper.SetConfigName("elsenova")
 	}
 
-	viper.SetDefault("web.port", 3000)
+	viper.SetDefault("web.port", 4000)
+	viper.SetDefault("web.frontend", "http://localhost:4001")
 	viper.SetDefault("debugLogging", true)
 	viper.SetDefault("databaseUrl", "sqlite://data.db")
 	viper.SetDefault("baseVoreCount", 0)

@@ -19,7 +19,8 @@ type Config struct {
 	}
 
 	Web struct {
-		Port int
+		Port     int
+		Frontend string
 	}
 }
 
