@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var voreCmd = &definition{
+var voreCmd = &Definition{
 	"vore",
 	&cmd{
 		Description: "Increments the vore counter",
@@ -36,5 +36,5 @@ var voreCmd = &definition{
 }
 
 func init() {
-	register(voreCmd)
+	Register(voreCmd)
 }

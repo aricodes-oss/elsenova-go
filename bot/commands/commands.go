@@ -8,10 +8,10 @@ type handler = func(s *discordgo.Session, i *discordgo.InteractionCreate)
 type handlerMap = map[string]handler
 type cmd = discordgo.ApplicationCommand
 
-type definition struct {
-	name    string
-	base    *discordgo.ApplicationCommand
-	handler handler
+type Definition struct {
+	Name    string
+	Base    *discordgo.ApplicationCommand
+	Handler handler
 }
 
 var (
@@ -19,10 +19,10 @@ var (
 	handlers = handlerMap{}
 )
 
-func register(cmd *definition) {
-	cmd.base.Name = cmd.name
-	commands = append(commands, cmd.base)
-	handlers[cmd.name] = cmd.handler
+func Register(cmd *Definition) {
+	cmd.Base.Name = cmd.Name
+	commands = append(commands, cmd.Base)
+	handlers[cmd.Name] = cmd.Handler
 }
 
 func All() ([]*discordgo.ApplicationCommand, handlerMap) {

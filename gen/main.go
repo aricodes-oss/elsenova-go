@@ -19,7 +19,7 @@ func main() {
 	g.UseDB(db.Connection) // reuse your gorm db
 
 	// Generate basic type-safe DAO API for struct `model.User` following conventions
-	g.ApplyBasic(models.Vore{})
+	g.ApplyBasic(models.AllModels...)
 
 	g.ApplyInterface(func(Querier) {}, models.Vore{})
 

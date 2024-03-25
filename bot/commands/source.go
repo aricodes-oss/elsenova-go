@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var sourceCmd = &definition{
+var sourceCmd = &Definition{
 	"source",
 	&cmd{
 		Description: "Sends a link to this bot's GitHub repo",
@@ -20,5 +20,5 @@ var sourceCmd = &definition{
 }
 
 func init() {
-	register(sourceCmd)
+	Register(sourceCmd)
 }

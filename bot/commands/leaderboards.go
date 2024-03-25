@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var leaderboardsCmd = &definition{
+var leaderboardsCmd = &Definition{
 	"leadervoreds",
 	&cmd{
 		Description: "Sends a link to the leadervoreds",
@@ -20,5 +20,5 @@ var leaderboardsCmd = &definition{
 }
 
 func init() {
-	register(leaderboardsCmd)
+	Register(leaderboardsCmd)
 }

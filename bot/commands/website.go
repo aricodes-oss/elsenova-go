@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var websiteCmd = &definition{
+var websiteCmd = &Definition{
 	"website",
 	&cmd{
 		Description: "Sends a link to this bot's web interface",
@@ -20,5 +20,5 @@ var websiteCmd = &definition{
 }
 
 func init() {
-	register(websiteCmd)
+	Register(websiteCmd)
 }

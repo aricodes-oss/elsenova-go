@@ -1,5 +1,13 @@
 package util
 
+import (
+	"fmt"
+	"math/rand/v2"
+)
+
+// Any positive 10 digit integer
+const SEED_MAX = 9999999999
+
 func Map[I any, R any](input []I, mapper func(I, int) R) []R {
 	results := make([]R, len(input))
 
@@ -8,4 +16,8 @@ func Map[I any, R any](input []I, mapper func(I, int) R) []R {
 	}
 
 	return results
+}
+
+func RandoSeed() string {
+	return fmt.Sprintf("%10d", rand.IntN(SEED_MAX))
 }

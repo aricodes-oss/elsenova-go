@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/robfig/cron/v3"
 	"github.com/rs/zerolog/log"
 )
 
@@ -43,6 +44,9 @@ type bot struct {
 	// Command cooldowns
 	lastRunTime map[string]time.Time
 
+	// Cron instance for scheduling
+	scheduler *cron.Cron
+
 	initOnce    sync.Once
 	destroyOnce sync.Once
 }
@@ -57,13 +61,14 @@ func (b *bot) init() {
 		// Initialize fields
 		b.sc = make(chan os.Signal, 1)
 		b.lastRunTime = make(map[string]time.Time)
+		b.scheduler = cron.New()
 
-		// Handlers
+		// Attach handlers
 		b.dg.AddHandler(b.messageCreate)      // Incoming message
 		b.dg.AddHandler(b.slashCommandRouter) // Slash command (route to map, see commands.go and ./commands)
 
+		// Register application commands
 		cmdList, _ := commands.All()
-
 		registeredCommands = make([]*discordgo.ApplicationCommand, len(cmdList))
 		for idx, rawCmd := range cmdList {
 			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, conf.GuildID, rawCmd)
@@ -73,16 +78,23 @@ func (b *bot) init() {
 			registeredCommands[idx] = cmd
 		}
 	})
+
+	// Start the scheduler
+	b.scheduler.Start()
 }
 
 func (b *bot) destroy() {
 	b.destroyOnce.Do(func() {
 		conf = config.Load()
 
+		// Stop the scheduler
+		b.scheduler.Start()
+
+		// Detach application commands
 		for _, cmd := range registeredCommands {
 			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, conf.GuildID, cmd.ID)
 			if err != nil {
-				log.Fatal().Err(err).Msg("Failed to deregister command!")
+				log.Error().Err(err).Msg("Failed to deregister command!")
 			}
 		}
 	})

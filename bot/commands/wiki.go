@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var wikiCmd = &definition{
+var wikiCmd = &Definition{
 	"wiki",
 	&cmd{
 		Description: "Sends a link to the Axiom Verge speedrunning wiki",
@@ -20,5 +20,5 @@ var wikiCmd = &definition{
 }
 
 func init() {
-	register(wikiCmd)
+	Register(wikiCmd)
 }
