@@ -19,5 +19,5 @@ func Map[I any, R any](input []I, mapper func(I, int) R) []R {
 }
 
 func RandoSeed() string {
-	return fmt.Sprintf("%10d", rand.IntN(SEED_MAX))
+	return fmt.Sprintf("%010d", rand.IntN(SEED_MAX))
 }
