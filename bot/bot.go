@@ -67,6 +67,31 @@ func (b *bot) init() {
 		b.dg.AddHandler(b.messageCreate)      // Incoming message
 		b.dg.AddHandler(b.slashCommandRouter) // Slash command (route to map, see commands.go and ./commands)
 
+		// Attach scheduled jobs
+		_, err := b.scheduler.AddFunc(conf.DailySeed.Schedule, b.postDailySeed)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to start scheduler")
+		}
+
+		// We have to be able to address this so the allocation is necessary
+		managePermissions := int64(discordgo.PermissionManageMessages)
+		commands.Register(&commands.Definition{
+			Name: "trigger-seed",
+			Base: &discordgo.ApplicationCommand{
+				Description:              "Posts a new daily seed thread, off-schedule",
+				DefaultMemberPermissions: &managePermissions,
+			},
+			Handler: func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+				b.postDailySeed()
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "Seed posted!",
+					},
+				})
+			},
+		})
+
 		// Register application commands
 		cmdList, _ := commands.All()
 		registeredCommands = make([]*discordgo.ApplicationCommand, len(cmdList))
@@ -77,10 +102,10 @@ func (b *bot) init() {
 			}
 			registeredCommands[idx] = cmd
 		}
-	})
 
-	// Start the scheduler
-	b.scheduler.Start()
+		// Start the scheduler
+		b.scheduler.Start()
+	})
 }
 
 func (b *bot) destroy() {

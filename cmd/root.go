@@ -87,11 +87,14 @@ func InitConfig() {
 		viper.SetConfigName("elsenova")
 	}
 
+	viper.SetDefault("databaseUrl", "sqlite://data.db")
+	viper.SetDefault("baseVoreCount", 0)
+
+	viper.SetDefault("dailySeed.schedule", "0 7 * * * *")
+
 	viper.SetDefault("web.port", 4000)
 	viper.SetDefault("web.frontend", "http://localhost:4001")
 	viper.SetDefault("debugLogging", true)
-	viper.SetDefault("databaseUrl", "sqlite://data.db")
-	viper.SetDefault("baseVoreCount", 0)
 
 	viper.SetDefault("cooldowns.default", 10)
 	viper.SetDefault("cooldowns.vore", 600)

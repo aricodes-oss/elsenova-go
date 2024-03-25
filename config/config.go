@@ -5,8 +5,12 @@ import (
 )
 
 type Config struct {
-	Token   string
-	GuildID string
+	Token     string
+	GuildID   string
+	DailySeed struct {
+		Channel  string
+		Schedule string
+	}
 
 	DatabaseURL   string
 	BaseVoreCount int
