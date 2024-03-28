@@ -113,7 +113,7 @@ func (b *bot) destroy() {
 		conf = config.Load()
 
 		// Stop the scheduler
-		b.scheduler.Start()
+		b.scheduler.Stop()
 
 		// Detach application commands
 		for _, cmd := range registeredCommands {
