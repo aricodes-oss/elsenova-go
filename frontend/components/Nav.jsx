@@ -1,22 +1,22 @@
+import Link from 'next/link';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
 import { Github } from 'react-bootstrap-icons';
-import { LinkContainer } from 'react-router-bootstrap';
 
 const Navigation = () => (
   <Navbar expand="lg" className="bg-body-tertiary">
     <Container>
-      <LinkContainer to="/">
-        <Navbar.Brand>Elsenova</Navbar.Brand>
-      </LinkContainer>
+      <Navbar.Brand as={Link} href="/">
+        Elsenova
+      </Navbar.Brand>
 
       <Navbar.Collapse>
         <Nav className="me-auto">
-          <LinkContainer to="/leaderboards">
-            <Nav.Link>Leadervoreds</Nav.Link>
-          </LinkContainer>
+          <Nav.Link as={Link} href="/leaderboards">
+            Leadervoreds
+          </Nav.Link>
         </Nav>
 
         <Nav className="justify-content-end">
