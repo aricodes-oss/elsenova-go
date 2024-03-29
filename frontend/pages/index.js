@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Image from 'next/image';
 
 import Container from 'react-bootstrap/Container';
 import Card from 'react-bootstrap/Card';
@@ -25,7 +24,7 @@ export default function Home() {
         <Container>
           <h1 className="mt-5">Elsenova</h1>
           <p className="my-2">
-            Hey! We uh. We don't have a whole lot here right now. Stay tuned though!
+            Hey! We uh. We don&apos;t have a whole lot here right now. Stay tuned though!
           </p>
 
           <Card style={{ width: '18rem' }} className="mx-auto my-3">

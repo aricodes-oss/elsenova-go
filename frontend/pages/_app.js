@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import SSRProvider from 'react-bootstrap/SSRProvider';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -19,10 +18,8 @@ export default function App({ Component, pageProps }) {
   );
 
   return (
-    <SSRProvider>
-      <QueryClientProvider client={queryClient}>
-        <Component {...pageProps} />
-      </QueryClientProvider>
-    </SSRProvider>
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />
+    </QueryClientProvider>
   );
 }

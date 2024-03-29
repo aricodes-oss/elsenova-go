@@ -14,7 +14,7 @@ COPY frontend .
 RUN npm run build
 
 ### Backend
-FROM golang:latest as build
+FROM golang:latest as backend-build
 
 WORKDIR /elsenova
 
@@ -25,18 +25,19 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Grab frontend slug
-COPY --from=frontend-build /code/dist web/dist
-
 # Build statically linked binary
-RUN go build -tags prod
+RUN go build
 
 ### Deployment
-FROM golang:latest
+FROM node:latest
+
+RUN apt-get update && apt-get install -y supervisor
 
 ENV GIN_MODE=release
-WORKDIR /
+WORKDIR /code
 
-COPY --from=build /elsenova/elsenova .
+COPY supervisord.conf .
+COPY --from=frontend-build /code .
+COPY --from=backend-build /elsenova/elsenova .
 
-ENTRYPOINT ["/elsenova"]
+ENTRYPOINT ["supervisord", "-n", "-c",  "./supervisord.conf"]

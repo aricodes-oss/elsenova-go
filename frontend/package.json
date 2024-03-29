@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 4001",
-    "build": "next build -p 4001",
-    "start": "next start",
-    "lint": "next lint"
+    "build": "next build",
+    "start": "next start -p 4001",
+    "lint": "next lint",
+    "fix": "next lint --fix"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.28.9",

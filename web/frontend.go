@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// In dev we can just directly route all 404s to the frontend
 func mountFrontend(router *gin.Engine) {
 	router.NoRoute(noRoute())
 }
