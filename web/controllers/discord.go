@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"slices"
 	"sync"
+	"time"
 
 	"elsenova/config"
 	"elsenova/models"
@@ -13,17 +14,16 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
+	"gorm.io/gorm/clause"
 )
 
 type DiscordController struct {
 	dg     *discordgo.Session
 	dgOnce sync.Once
-
-	userCache map[string]*discordgo.User
 }
 
 func (d *DiscordController) Mount(baseGroup gin.IRouter) {
-	d.userCache = make(map[string]*discordgo.User)
 	us := baseGroup.Group("discord")
 
 	us.GET("/user/:id", d.userRegistrationMiddleware, d.GetUser)
@@ -31,14 +31,18 @@ func (d *DiscordController) Mount(baseGroup gin.IRouter) {
 
 func (d *DiscordController) GetUser(c ctx) {
 	id := c.Param("id")
-	user, inCache := d.userCache[id]
-	if inCache {
-		c.JSON(http.StatusOK, user)
+	cached, _ := query.CachedUser.Where(query.CachedUser.ID.Eq(id)).First()
+	if cached != nil {
+		// If we pulled this over 5 minutes ago, refresh in the background
+		if cached.UpdatedAt.Before(time.Now().Add(time.Minute * -5)) {
+			go d.fetchUser(id)
+		}
+
+		c.JSON(http.StatusOK, cached)
 		return
 	}
 
-	dg := d.session()
-	user, err := dg.User(c.Param("id"))
+	user, err := d.fetchUser(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -59,6 +63,21 @@ func (d *DiscordController) session() *discordgo.Session {
 	})
 
 	return d.dg
+}
+
+func (d *DiscordController) fetchUser(id string) (*models.CachedUser, error) {
+	cu := query.CachedUser
+	dg := d.session()
+	user, err := dg.User(id)
+	if err != nil {
+		return nil, err
+	}
+
+	model := &models.CachedUser{}
+	copier.Copy(model, &user)
+
+	err = cu.Clauses(clause.OnConflict{UpdateAll: true}).Create(model)
+	return model, err
 }
 
 // Ensures that we're not just looking up arbitrary people

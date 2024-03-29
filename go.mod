@@ -7,6 +7,7 @@ require (
 	github.com/deckarep/golang-set/v2 v2.6.0
 	github.com/gin-contrib/static v1.1.0
 	github.com/gin-gonic/gin v1.9.1
+	github.com/jinzhu/copier v0.4.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/zerolog v1.32.0
 	github.com/spf13/cobra v1.8.0

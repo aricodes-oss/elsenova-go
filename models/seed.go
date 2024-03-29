@@ -9,3 +9,7 @@ type Seed struct {
 
 	Value string `json:"value" gorm:"unique"`
 }
+
+func init() {
+	AllModels = append(AllModels, Seed{})
+}

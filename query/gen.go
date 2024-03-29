@@ -16,39 +16,44 @@ import (
 )
 
 var (
-	Q    = new(Query)
-	Seed *seed
-	Vore *vore
+	Q          = new(Query)
+	CachedUser *cachedUser
+	Seed       *seed
+	Vore       *vore
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	CachedUser = &Q.CachedUser
 	Seed = &Q.Seed
 	Vore = &Q.Vore
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:   db,
-		Seed: newSeed(db, opts...),
-		Vore: newVore(db, opts...),
+		db:         db,
+		CachedUser: newCachedUser(db, opts...),
+		Seed:       newSeed(db, opts...),
+		Vore:       newVore(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Seed seed
-	Vore vore
+	CachedUser cachedUser
+	Seed       seed
+	Vore       vore
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		Seed: q.Seed.clone(db),
-		Vore: q.Vore.clone(db),
+		db:         db,
+		CachedUser: q.CachedUser.clone(db),
+		Seed:       q.Seed.clone(db),
+		Vore:       q.Vore.clone(db),
 	}
 }
 
@@ -62,21 +67,24 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		Seed: q.Seed.replaceDB(db),
-		Vore: q.Vore.replaceDB(db),
+		db:         db,
+		CachedUser: q.CachedUser.replaceDB(db),
+		Seed:       q.Seed.replaceDB(db),
+		Vore:       q.Vore.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Seed ISeedDo
-	Vore IVoreDo
+	CachedUser ICachedUserDo
+	Seed       ISeedDo
+	Vore       IVoreDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Seed: q.Seed.WithContext(ctx),
-		Vore: q.Vore.WithContext(ctx),
+		CachedUser: q.CachedUser.WithContext(ctx),
+		Seed:       q.Seed.WithContext(ctx),
+		Vore:       q.Vore.WithContext(ctx),
 	}
 }
 

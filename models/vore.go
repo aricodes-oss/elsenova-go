@@ -9,3 +9,7 @@ type Vore struct {
 
 	UserID string `json:"userID"`
 }
+
+func init() {
+	AllModels = append(AllModels, Vore{})
+}
