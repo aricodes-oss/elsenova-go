@@ -40,4 +40,4 @@ COPY supervisord.conf .
 COPY --from=frontend-build /code .
 COPY --from=backend-build /elsenova/elsenova .
 
-CMD ["supervisord", "-n", "-c",  "./supervisord.conf"]
+CMD ["supervisord", "-c",  "./supervisord.conf"]x
