@@ -12,8 +12,6 @@ const Row = ({ userID, count, ...props }) => {
     queryFn: () => discord.findUser(userID),
   });
 
-  console.log(query);
-
   return (
     <tr {...props}>
       <td>{isPending ? 'Loading...' : user.username}</td>
