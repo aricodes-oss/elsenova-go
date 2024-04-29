@@ -18,6 +18,7 @@ import (
 var (
 	Q          = new(Query)
 	CachedUser *cachedUser
+	Sandwich   *sandwich
 	Seed       *seed
 	Vore       *vore
 )
@@ -25,6 +26,7 @@ var (
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	CachedUser = &Q.CachedUser
+	Sandwich = &Q.Sandwich
 	Seed = &Q.Seed
 	Vore = &Q.Vore
 }
@@ -33,6 +35,7 @@ func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
 		db:         db,
 		CachedUser: newCachedUser(db, opts...),
+		Sandwich:   newSandwich(db, opts...),
 		Seed:       newSeed(db, opts...),
 		Vore:       newVore(db, opts...),
 	}
@@ -42,6 +45,7 @@ type Query struct {
 	db *gorm.DB
 
 	CachedUser cachedUser
+	Sandwich   sandwich
 	Seed       seed
 	Vore       vore
 }
@@ -52,6 +56,7 @@ func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
 		db:         db,
 		CachedUser: q.CachedUser.clone(db),
+		Sandwich:   q.Sandwich.clone(db),
 		Seed:       q.Seed.clone(db),
 		Vore:       q.Vore.clone(db),
 	}
@@ -69,6 +74,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
 		db:         db,
 		CachedUser: q.CachedUser.replaceDB(db),
+		Sandwich:   q.Sandwich.replaceDB(db),
 		Seed:       q.Seed.replaceDB(db),
 		Vore:       q.Vore.replaceDB(db),
 	}
@@ -76,6 +82,7 @@ func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 
 type queryCtx struct {
 	CachedUser ICachedUserDo
+	Sandwich   ISandwichDo
 	Seed       ISeedDo
 	Vore       IVoreDo
 }
@@ -83,6 +90,7 @@ type queryCtx struct {
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
 		CachedUser: q.CachedUser.WithContext(ctx),
+		Sandwich:   q.Sandwich.WithContext(ctx),
 		Seed:       q.Seed.WithContext(ctx),
 		Vore:       q.Vore.WithContext(ctx),
 	}

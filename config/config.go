@@ -12,8 +12,10 @@ type Config struct {
 		Schedule string
 	}
 
-	DatabaseURL   string
-	BaseVoreCount int
+	DatabaseURL string
+
+	BaseVoreCount     int
+	SandwichFrequency float64
 
 	DebugLogging bool
 

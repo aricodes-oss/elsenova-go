@@ -88,7 +88,9 @@ func InitConfig() {
 	}
 
 	viper.SetDefault("databaseUrl", "sqlite://data.db")
+
 	viper.SetDefault("baseVoreCount", 0)
+	viper.SetDefault("sandwichFrequency", 0.75)
 
 	viper.SetDefault("dailySeed.schedule", "0 7 * * * *")
 
@@ -96,7 +98,7 @@ func InitConfig() {
 	viper.SetDefault("web.frontend", "http://localhost:4001")
 	viper.SetDefault("debugLogging", true)
 
-	viper.SetDefault("cooldowns.default", 10)
+	viper.SetDefault("cooldowns.default", 2)
 	viper.SetDefault("cooldowns.vore", 600)
 
 	viper.AutomaticEnv() // read in environment variables that match
