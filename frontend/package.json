@@ -19,6 +19,7 @@
     "react-bootstrap-icons": "^1.11.3",
     "react-dom": "^18",
     "serializr": "^3.0.2",
+    "sharp": "^0.33.3",
     "url-join": "^5.0.0",
     "window-or-global": "^1.0.1"
   },
