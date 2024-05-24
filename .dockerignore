@@ -3,3 +3,4 @@
 Dockerfile
 Dockerfile.local
 docker-compose.yml
+elsenova.yml
