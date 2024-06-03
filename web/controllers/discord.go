@@ -1,17 +1,14 @@
 package controllers
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
-	"slices"
-	"sync"
 	"time"
 
 	"elsenova/config"
 	"elsenova/models"
 	"elsenova/query"
-	"elsenova/util"
+       "sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
@@ -69,13 +66,6 @@ func (d *DiscordController) session() *discordgo.Session {
 func (d *DiscordController) fetchUser(id string) (*models.CachedUser, error) {
 	cu := query.CachedUser
 
-	// First, make sure this is a user we know so we're not running an open resolver
-	var knownIds []string
-	cu.Pluck(cu.ID, &knownIds)
-	if !slices.Contains(knownIds, id) {
-		return nil, errors.New("User not registered with guild: " + id)
-	}
-
 	dg := d.session()
 	user, err := dg.User(id)
 	if err != nil {
@@ -95,16 +85,12 @@ func (d *DiscordController) userRegistrationMiddleware(c ctx) {
 	v := query.Vore
 	id := c.Param("id")
 
-	knownUsers, _ := v.Select(v.UserID).Find()
-	ids := util.Map(knownUsers, func(record *models.Vore, idx int) string {
-		return record.UserID
-	})
-
-	if !slices.Contains(ids, id) {
+       if matches, _ := v.Select(v.UserID.Eq(id)).Count(); matches == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": fmt.Sprintf("User %v is not registered!", id),
 		})
 		return
 	}
+
 	c.Next()
 }
