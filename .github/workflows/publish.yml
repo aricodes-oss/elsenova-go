@@ -26,6 +26,13 @@ jobs:
         # This is where you will update the personal access token to GITHUB_TOKEN
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
+      # The fact that I can't just ${{ var|lowercase }} astounds me
+      - name: Change case of image identifier
+        id: case
+        uses: ASzc/change-string-case-action@v6
+        with:
+          string: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+
       - name: Build
         uses: docker/build-push-action@v2
         with:
@@ -33,4 +40,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+          tags: ghcr.io/${{ steps.case.outputs.lowercase }}:latest
