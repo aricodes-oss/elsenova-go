@@ -8,7 +8,7 @@ import (
 	"elsenova/config"
 	"elsenova/models"
 	"elsenova/query"
-       "sync"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
@@ -85,7 +85,7 @@ func (d *DiscordController) userRegistrationMiddleware(c ctx) {
 	v := query.Vore
 	id := c.Param("id")
 
-       if matches, _ := v.Select(v.UserID.Eq(id)).Count(); matches == 0 {
+	if matches, _ := v.Select(v.UserID.Eq(id)).Count(); matches == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": fmt.Sprintf("User %v is not registered!", id),
 		})
