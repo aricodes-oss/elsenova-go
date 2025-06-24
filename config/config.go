@@ -16,6 +16,7 @@ type Config struct {
 
 	BaseVoreCount     int
 	SandwichFrequency float64
+	VoreChannelId     string
 
 	DebugLogging bool
 

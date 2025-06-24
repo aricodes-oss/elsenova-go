@@ -18,6 +18,16 @@ var voreCmd = &Definition{
 		v := query.Vore
 		conf := config.Load()
 
+		if conf.VoreChannelId != "" && i.ChannelID != conf.VoreChannelId {
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "That's not allowed in this channel!",
+				},
+			})
+			return
+		}
+
 		v.Create(&models.Vore{
 			UserID: i.Member.User.ID,
 		})
