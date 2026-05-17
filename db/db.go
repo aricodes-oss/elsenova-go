@@ -46,7 +46,12 @@ func init() {
 		)
 
 		dialect = postgres.Open(dsn)
+	default:
+		panic(fmt.Errorf("unsupported database URL scheme %q", parsed.Scheme))
 	}
 
-	Connection, _ = gorm.Open(dialect)
+	Connection, err = gorm.Open(dialect)
+	if err != nil {
+		panic(err)
+	}
 }

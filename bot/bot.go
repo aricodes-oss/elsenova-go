@@ -14,8 +14,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-var conf *config.Config
-
 type Bot interface {
 	// Start brings the bot online.
 	Start() error
@@ -27,10 +25,13 @@ type Bot interface {
 
 func New(token string) (Bot, error) {
 	dg, err := discordgo.New("Bot " + token)
+	if err != nil {
+		return nil, err
+	}
 	b := &bot{dg: dg}
 	b.init()
 
-	return b, err
+	return b, nil
 }
 
 // bot stores values for the bot application.
@@ -42,10 +43,14 @@ type bot struct {
 	sc chan os.Signal
 
 	// Command cooldowns
-	lastRunTime map[string]time.Time
+	lastRunTime   map[string]time.Time
+	lastRunTimeMu sync.Mutex
 
 	// Cron instance for scheduling
 	scheduler *cron.Cron
+
+	// Stores command registration info for deletion on shutdown
+	registeredCommands []*discordgo.ApplicationCommand
 
 	initOnce    sync.Once
 	destroyOnce sync.Once
@@ -94,13 +99,13 @@ func (b *bot) init() {
 
 		// Register application commands
 		cmdList, _ := commands.All()
-		registeredCommands = make([]*discordgo.ApplicationCommand, len(cmdList))
+		b.registeredCommands = make([]*discordgo.ApplicationCommand, len(cmdList))
 		for idx, rawCmd := range cmdList {
 			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, conf.GuildID, rawCmd)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to register application commands")
 			}
-			registeredCommands[idx] = cmd
+			b.registeredCommands[idx] = cmd
 		}
 
 		// Start the scheduler
@@ -110,13 +115,13 @@ func (b *bot) init() {
 
 func (b *bot) destroy() {
 	b.destroyOnce.Do(func() {
-		conf = config.Load()
+		conf := config.Load()
 
 		// Stop the scheduler
 		b.scheduler.Stop()
 
 		// Detach application commands
-		for _, cmd := range registeredCommands {
+		for _, cmd := range b.registeredCommands {
 			err := b.dg.ApplicationCommandDelete(b.dg.State.User.ID, conf.GuildID, cmd.ID)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to deregister command!")

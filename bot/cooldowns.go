@@ -14,8 +14,12 @@ func (b *bot) commandOnCooldown(name string) bool {
 		effectiveCooldown = specificPeriod
 	}
 
+	b.lastRunTimeMu.Lock()
+	last := b.lastRunTime[name]
+	b.lastRunTimeMu.Unlock()
+
 	// "The last time this command was run is at least effectiveCooldown seconds ago"
-	return !b.lastRunTime[name].Before(
+	return !last.Before(
 		time.Now().Add(
 			time.Duration(effectiveCooldown*int(time.Second)) * -1),
 	)

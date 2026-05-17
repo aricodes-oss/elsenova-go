@@ -25,12 +25,9 @@ func (b *bot) slashCommandRouter(s *discordgo.Session, i *discordgo.InteractionC
 			return
 		}
 
+		b.lastRunTimeMu.Lock()
 		b.lastRunTime[name] = time.Now()
+		b.lastRunTimeMu.Unlock()
 		handler(s, i)
 	}
 }
-
-var (
-	// Stores command registration info for deletion on shutdown
-	registeredCommands []*discordgo.ApplicationCommand
-)
