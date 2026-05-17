@@ -6,6 +6,7 @@ package query
 
 import (
 	"context"
+	"database/sql"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -36,6 +37,7 @@ func newCachedUser(db *gorm.DB, opts ...gen.DOOption) cachedUser {
 	_cachedUser.Avatar = field.NewString(tableName, "avatar")
 	_cachedUser.Locale = field.NewString(tableName, "locale")
 	_cachedUser.Discriminator = field.NewString(tableName, "discriminator")
+	_cachedUser.GlobalName = field.NewString(tableName, "global_name")
 	_cachedUser.Token = field.NewString(tableName, "token")
 	_cachedUser.Verified = field.NewBool(tableName, "verified")
 	_cachedUser.MFAEnabled = field.NewBool(tableName, "mfa_enabled")
@@ -65,6 +67,7 @@ type cachedUser struct {
 	Avatar        field.String
 	Locale        field.String
 	Discriminator field.String
+	GlobalName    field.String
 	Token         field.String
 	Verified      field.Bool
 	MFAEnabled    field.Bool
@@ -100,6 +103,7 @@ func (c *cachedUser) updateTableName(table string) *cachedUser {
 	c.Avatar = field.NewString(table, "avatar")
 	c.Locale = field.NewString(table, "locale")
 	c.Discriminator = field.NewString(table, "discriminator")
+	c.GlobalName = field.NewString(table, "global_name")
 	c.Token = field.NewString(table, "token")
 	c.Verified = field.NewBool(table, "verified")
 	c.MFAEnabled = field.NewBool(table, "mfa_enabled")
@@ -126,7 +130,7 @@ func (c *cachedUser) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (c *cachedUser) fillFieldMap() {
-	c.fieldMap = make(map[string]field.Expr, 19)
+	c.fieldMap = make(map[string]field.Expr, 20)
 	c.fieldMap["id"] = c.ID
 	c.fieldMap["created_at"] = c.CreatedAt
 	c.fieldMap["updated_at"] = c.UpdatedAt
@@ -136,6 +140,7 @@ func (c *cachedUser) fillFieldMap() {
 	c.fieldMap["avatar"] = c.Avatar
 	c.fieldMap["locale"] = c.Locale
 	c.fieldMap["discriminator"] = c.Discriminator
+	c.fieldMap["global_name"] = c.GlobalName
 	c.fieldMap["token"] = c.Token
 	c.fieldMap["verified"] = c.Verified
 	c.fieldMap["mfa_enabled"] = c.MFAEnabled
@@ -215,6 +220,8 @@ type ICachedUserDo interface {
 	FirstOrCreate() (*models.CachedUser, error)
 	FindByPage(offset int, limit int) (result []*models.CachedUser, count int64, err error)
 	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
+	Rows() (*sql.Rows, error)
+	Row() *sql.Row
 	Scan(result interface{}) (err error)
 	Returning(value interface{}, columns ...string) ICachedUserDo
 	UnderlyingDB() *gorm.DB
