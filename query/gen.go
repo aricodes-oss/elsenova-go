@@ -16,16 +16,18 @@ import (
 )
 
 var (
-	Q          = new(Query)
-	CachedUser *cachedUser
-	Sandwich   *sandwich
-	Seed       *seed
-	Vore       *vore
+	Q             = new(Query)
+	CachedUser    *cachedUser
+	CustomCommand *customCommand
+	Sandwich      *sandwich
+	Seed          *seed
+	Vore          *vore
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
 	CachedUser = &Q.CachedUser
+	CustomCommand = &Q.CustomCommand
 	Sandwich = &Q.Sandwich
 	Seed = &Q.Seed
 	Vore = &Q.Vore
@@ -33,32 +35,35 @@ func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:         db,
-		CachedUser: newCachedUser(db, opts...),
-		Sandwich:   newSandwich(db, opts...),
-		Seed:       newSeed(db, opts...),
-		Vore:       newVore(db, opts...),
+		db:            db,
+		CachedUser:    newCachedUser(db, opts...),
+		CustomCommand: newCustomCommand(db, opts...),
+		Sandwich:      newSandwich(db, opts...),
+		Seed:          newSeed(db, opts...),
+		Vore:          newVore(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	CachedUser cachedUser
-	Sandwich   sandwich
-	Seed       seed
-	Vore       vore
+	CachedUser    cachedUser
+	CustomCommand customCommand
+	Sandwich      sandwich
+	Seed          seed
+	Vore          vore
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:         db,
-		CachedUser: q.CachedUser.clone(db),
-		Sandwich:   q.Sandwich.clone(db),
-		Seed:       q.Seed.clone(db),
-		Vore:       q.Vore.clone(db),
+		db:            db,
+		CachedUser:    q.CachedUser.clone(db),
+		CustomCommand: q.CustomCommand.clone(db),
+		Sandwich:      q.Sandwich.clone(db),
+		Seed:          q.Seed.clone(db),
+		Vore:          q.Vore.clone(db),
 	}
 }
 
@@ -72,27 +77,30 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:         db,
-		CachedUser: q.CachedUser.replaceDB(db),
-		Sandwich:   q.Sandwich.replaceDB(db),
-		Seed:       q.Seed.replaceDB(db),
-		Vore:       q.Vore.replaceDB(db),
+		db:            db,
+		CachedUser:    q.CachedUser.replaceDB(db),
+		CustomCommand: q.CustomCommand.replaceDB(db),
+		Sandwich:      q.Sandwich.replaceDB(db),
+		Seed:          q.Seed.replaceDB(db),
+		Vore:          q.Vore.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	CachedUser ICachedUserDo
-	Sandwich   ISandwichDo
-	Seed       ISeedDo
-	Vore       IVoreDo
+	CachedUser    ICachedUserDo
+	CustomCommand ICustomCommandDo
+	Sandwich      ISandwichDo
+	Seed          ISeedDo
+	Vore          IVoreDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		CachedUser: q.CachedUser.WithContext(ctx),
-		Sandwich:   q.Sandwich.WithContext(ctx),
-		Seed:       q.Seed.WithContext(ctx),
-		Vore:       q.Vore.WithContext(ctx),
+		CachedUser:    q.CachedUser.WithContext(ctx),
+		CustomCommand: q.CustomCommand.WithContext(ctx),
+		Sandwich:      q.Sandwich.WithContext(ctx),
+		Seed:          q.Seed.WithContext(ctx),
+		Vore:          q.Vore.WithContext(ctx),
 	}
 }
 

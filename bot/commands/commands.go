@@ -25,6 +25,10 @@ func Register(cmd *Definition) {
 	handlers[cmd.Name] = cmd.Handler
 }
 
+func Unregister(name string) {
+	delete(handlers, name)
+}
+
 func All() ([]*discordgo.ApplicationCommand, handlerMap) {
 	return commands, handlers
 }

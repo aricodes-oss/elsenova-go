@@ -52,6 +52,9 @@ type bot struct {
 	// Stores command registration info for deletion on shutdown
 	registeredCommands []*discordgo.ApplicationCommand
 
+	// Live Discord registrations for moderator-added custom commands
+	customCommands *customCommandRegistry
+
 	initOnce    sync.Once
 	destroyOnce sync.Once
 }
@@ -67,6 +70,7 @@ func (b *bot) init() {
 		b.sc = make(chan os.Signal, 1)
 		b.lastRunTime = make(map[string]time.Time)
 		b.scheduler = cron.New()
+		b.customCommands = newCustomCommandRegistry()
 
 		// Attach handlers
 		b.dg.AddHandler(b.messageCreate)      // Incoming message
@@ -97,15 +101,28 @@ func (b *bot) init() {
 			},
 		})
 
+		// Pull persisted custom commands + wire up /command so the loop
+		// below picks them all up alongside the statically-registered ones
+		customNames, err := loadCustomCommands()
+		if err != nil {
+			log.Fatal().Err(err).Msg("Failed to load custom commands")
+		}
+		b.registerManagementCommand()
+
 		// Register application commands
 		cmdList, _ := commands.All()
-		b.registeredCommands = make([]*discordgo.ApplicationCommand, len(cmdList))
-		for idx, rawCmd := range cmdList {
+		b.registeredCommands = make([]*discordgo.ApplicationCommand, 0, len(cmdList))
+		for _, rawCmd := range cmdList {
 			cmd, err := b.dg.ApplicationCommandCreate(b.dg.State.User.ID, conf.GuildID, rawCmd)
 			if err != nil {
 				log.Fatal().Err(err).Msg("Failed to register application commands")
 			}
-			b.registeredCommands[idx] = cmd
+			b.registeredCommands = append(b.registeredCommands, cmd)
+
+			// If a system command conflicts with a custom command, take the system
+			if customNames[cmd.Name] {
+				b.customCommands.set(cmd.Name, cmd)
+			}
 		}
 
 		// Start the scheduler
