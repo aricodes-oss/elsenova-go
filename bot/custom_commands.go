@@ -100,7 +100,7 @@ func (b *bot) registerManagementCommand() {
 					Name:        "remove",
 					Description: "Delete a custom command",
 					Options: []*discordgo.ApplicationCommandOption{
-						{Type: discordgo.ApplicationCommandOptionString, Name: "name", Description: "Command to remove", Required: true},
+						{Type: discordgo.ApplicationCommandOptionString, Name: "name", Description: "Command to remove", Required: true, Autocomplete: true},
 					},
 				},
 				{
@@ -123,6 +123,11 @@ func (b *bot) handleManageCommand(s *discordgo.Session, i *discordgo.Interaction
 	opts := map[string]*discordgo.ApplicationCommandInteractionDataOption{}
 	for _, o := range sub.Options {
 		opts[o.Name] = o
+	}
+
+	if i.Type == discordgo.InteractionApplicationCommandAutocomplete {
+		b.autocompleteManageCommand(s, i, sub, opts)
+		return
 	}
 
 	switch sub.Name {
@@ -204,6 +209,42 @@ func (b *bot) addCustomCommand(name, response, description string, member *disco
 	b.registeredCommands = append(b.registeredCommands, created)
 	log.Info().Str("name", name).Str("by", createdBy).Msg("Added custom command")
 	return fmt.Sprintf("Added `/%s`.", name)
+}
+
+func (b *bot) autocompleteManageCommand(s *discordgo.Session, i *discordgo.InteractionCreate, sub *discordgo.ApplicationCommandInteractionDataOption, opts map[string]*discordgo.ApplicationCommandInteractionDataOption) {
+	if sub.Name != "remove" {
+		return
+	}
+	o, ok := opts["name"]
+	if !ok || !o.Focused {
+		return
+	}
+	prefix := strings.ToLower(o.StringValue())
+
+	qcc := query.CustomCommand
+	rows, err := qcc.Order(qcc.Name).Find()
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to query custom commands for autocomplete")
+		return
+	}
+
+	choices := make([]*discordgo.ApplicationCommandOptionChoice, 0, len(rows))
+	for _, r := range rows {
+		if prefix != "" && !strings.Contains(strings.ToLower(r.Name), prefix) {
+			continue
+		}
+		choices = append(choices, &discordgo.ApplicationCommandOptionChoice{Name: r.Name, Value: r.Name})
+		if len(choices) == 25 {
+			break
+		}
+	}
+
+	if err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionApplicationCommandAutocompleteResult,
+		Data: &discordgo.InteractionResponseData{Choices: choices},
+	}); err != nil {
+		log.Error().Err(err).Msg("Failed to send autocomplete response")
+	}
 }
 
 func (b *bot) removeCustomCommand(name string) string {
